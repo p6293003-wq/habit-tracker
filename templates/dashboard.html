@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Трекер Привычек</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        /* --- БАЗОВЫЕ ПЕРЕМЕННЫЕ (СВЕТЛАЯ ТЕМА) --- */
+        :root {
+            --text-color: #1e1e2f;
+            --text-muted: #6c757d;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --input-border: rgba(0, 0, 0, 0.2);
+            --day-bg: rgba(0, 0, 0, 0.05);
+            --day-border: rgba(0, 0, 0, 0.1);
+            --day-text: rgba(0, 0, 0, 0.6);
+            --note-bg: rgba(255, 255, 255, 0.8);
+            --accent: #2575fc;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+            background-color: #e0eafc;
+        }
+
+        /* --- ТЕМЫ С ФОТО --- */
+        body.light-theme {
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            --text-color: #1e1e2f;
+            --text-muted: #6c757d;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --input-border: rgba(0, 0, 0, 0.2);
+            --day-bg: rgba(0, 0, 0, 0.05);
+            --day-border: rgba(0, 0, 0, 0.1);
+            --day-text: rgba(0, 0, 0, 0.6);
+            --note-bg: rgba(255, 255, 255, 0.8);
+            --accent: #2575fc;
+        }
+        body.theme-ocean { 
+            --text-color: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.8);
+            --glass-bg: rgba(10, 25, 40, 0.6);
+            --glass-border: rgba(0, 210, 255, 0.3);
+            --input-bg: rgba(0, 0, 0, 0.5);
+            --day-bg: rgba(255, 255, 255, 0.1);
+            --day-border: rgba(255, 255, 255, 0.3);
+            --day-text: rgba(255, 255, 255, 0.9);
+            --note-bg: rgba(0, 0, 0, 0.5);
+            --accent: #00d2ff;
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        body.theme-sunset { 
+            --text-color: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.8);
+            --glass-bg: rgba(0, 0, 0, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --input-bg: rgba(0, 0, 0, 0.6);
+            --day-bg: rgba(255, 255, 255, 0.1);
+            --day-border: rgba(255, 255, 255, 0.2);
+            --day-text: rgba(255, 255, 255, 0.9);
+            --note-bg: rgba(0, 0, 0, 0.5);
+            --accent: #ff8c00;
+            background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        body.theme-default { 
+            --text-color: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --glass-bg: rgba(0, 0, 0, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --input-bg: rgba(0, 0, 0, 0.5);
+            --day-bg: rgba(255, 255, 255, 0.05);
+            --day-border: rgba(255, 255, 255, 0.2);
+            --day-text: rgba(255, 255, 255, 0.8);
+            --note-bg: rgba(0, 0, 0, 0.4);
+            --accent: #4facfe;
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* --- ОБЩИЕ СТИЛИ --- */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+        .form-control, .form-select {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            border-radius: 12px;
+        }
+        .form-control::placeholder { color: var(--text-muted); }
+        .form-control:focus, .form-select:focus {
+            background: var(--input-bg);
+            color: var(--text-color);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            border-color: var(--input-border);
+        }
+        .form-select option { background: var(--glass-bg); color: var(--text-color); }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #6a11cb 0%, var(--accent) 100%);
+            border: none; border-radius: 12px; transition: transform 0.2s; color: white;
+        }
+        .btn-primary:hover { transform: scale(1.05); }
+        
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+        @media (max-width: 576px) {
+            .days-grid { gap: 3px; }
+            .day-btn { font-size: 0.6rem !important; padding: 3px !important; }
+        }
+
+        .day-btn {
+            background: var(--day-bg); border: 1px solid var(--day-border); color: var(--day-text);
+            border-radius: 10px; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 6px 4px; position: relative;
+        }
+        .day-btn:hover { background: var(--day-border); color: var(--text-color); }
+        .day-btn.done { background: linear-gradient(45deg, #11998e 0%, #38ef7d 100%); border: none; color: white; box-shadow: 0 0 10px rgba(56, 239, 125, 0.4); }
+
+        .mood-emoji { font-size: 1rem; cursor: pointer; opacity: 0.4; transition: opacity 0.2s; }
+        .mood-emoji:hover { opacity: 1; }
+        .mood-emoji.active { opacity: 1; transform: scale(1.2); }
+
+        .note-input {
+            background: var(--note-bg); border: 1px dashed var(--day-border); color: var(--text-color);
+            font-size: 0.75rem; padding: 3px; border-radius: 5px; width: 100%; margin-top: 4px;
+        }
+        .note-input:focus { outline: none; border-color: var(--accent); }
+        .note-input.has-text { border-color: var(--accent); color: var(--accent); }
+        .light-theme .note-input.has-text { color: var(--accent); }
+
+        .streak-badge {
+            background: linear-gradient(45deg, #f12711 0%, #f5af19 100%);
+            color: white; font-weight: bold; border-radius: 20px; padding: 4px 12px; font-size: 0.8rem;
+        }
+        .text-light-muted { color: var(--text-muted) !important; }
+        h2, h4 { font-weight: 700; color: var(--text-color); }
+        .theme-toggle {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-color);
+            border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .theme-toggle:hover { transform: rotate(30deg); }
+    </style>
+</head>
+<body class="theme-default">
+    <div class="container mt-5 mb-5" style="max-width: 900px;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1">Привет, {{ current_user.username }}! 👋</h2>
+                <p class="text-light-muted mb-0">Твой личный трекер привычек.</p>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <div class="dropdown">
+                    <button class="theme-toggle" data-bs-toggle="dropdown" title="Кастомизация">
+                        <i class="bi bi-palette"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="background: var(--glass-bg); border-color: var(--glass-border);">
+                        <li><a class="dropdown-item" href="#" onclick="setTheme('default')">Космос</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="setTheme('ocean')">Глубокий океан</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="setTheme('sunset')">Винный закат</a></li>
+                    </ul>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Сменить тему">
+                    <i class="bi bi-moon-stars" id="themeIcon"></i>
+                </button>
+                
+                <a href="{{ url_for('archive_page') }}" class="btn btn-outline-secondary rounded-pill px-3"><i class="bi bi-archive"></i> Архив</a>
+                <!-- КНОПКА ЭКСПОРТА -->
+                <a href="{{ url_for('export_data') }}" class="btn btn-outline-success rounded-pill px-3" title="Скачать данные"><i class="bi bi-download"></i> Экспорт</a>
+                <a href="{{ url_for('stats') }}" class="btn btn-outline-info rounded-pill px-3"><i class="bi bi-bar-chart"></i> Статистика</a>
+                <a href="{{ url_for('settings') }}" class="btn btn-outline-warning rounded-pill px-3"><i class="bi bi-gear"></i> Настройки</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary rounded-pill px-3">Выйти</a>
+            </div>
+        </div>
+
+        <div class="glass-card p-4 mb-4">
+            <form method="POST" action="{{ url_for('add_habit') }}" class="d-flex flex-wrap gap-2 align-items-center">
+                <input type="text" name="name" class="form-control form-control-lg flex-grow-1" placeholder="Новая привычка..." required style="min-width: 200px;">
+                <input type="time" name="reminder_time" class="form-control form-control-lg" style="width: auto;" title="Время напоминания">
+                <button type="submit" class="btn btn-primary btn-lg px-4"><i class="bi bi-plus-lg"></i></button>
+            </form>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="{{ url_for('dashboard', month=prev_month, year=prev_year) }}" class="btn btn-outline-light"><i class="bi bi-chevron-left"></i> Прошлый месяц</a>
+            <h4 class="mb-0">{{ current_month }} / {{ current_year }}</h4>
+            <a href="{{ url_for('dashboard', month=next_month, year=next_year) }}" class="btn btn-outline-light">Следующий месяц <i class="bi bi-chevron-right"></i></a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show rounded-3 border-0 shadow" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row g-3">
+            {% for habit in habits %}
+                <div class="col-12">
+                    <div class="glass-card p-4">
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <h4 class="mb-0">{{ habit.name }}</h4>
+                                {% if habit.streak > 0 %}
+                                    <span class="streak-badge">🔥 {{ habit.streak }} дн.</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-light rounded-circle" data-bs-toggle="modal" data-bs-target="#reminderModal{{ habit.id }}" style="color: var(--text-color); border-color: var(--day-border);" title="Напоминание">
+                                    <i class="bi bi-bell {% if habit.reminder_time %}text-warning{% endif %}"></i>
+                                </button>
+                                <form method="POST" action="{{ url_for('archive_habit', habit_id=habit.id) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle" title="В архив"><i class="bi bi-archive"></i></button>
+                                </form>
+                                <button type="button" class="btn btn-sm btn-outline-light rounded-circle" data-bs-toggle="modal" data-bs-target="#editModal{{ habit.id }}" style="color: var(--text-color); border-color: var(--day-border);">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form method="POST" action="{{ url_for('delete_habit', habit_id=habit.id) }}" onsubmit="return confirm('Удалить привычку?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="days-grid mt-3">
+                            {% for day_info in habit.days_status %}
+                                <div class="w-100 d-flex flex-column">
+                                    <form method="POST" action="{{ url_for('toggle_habit_date', habit_id=habit.id, date_str=day_info.date) }}?month={{ current_month }}&year={{ current_year }}" class="w-100">
+                                        <button type="submit" class="btn w-100 day-btn {% if day_info.done %}done{% endif %}" title="Отметить на {{ day_info.date }}">
+                                            <span style="font-size: 0.65rem; opacity: 0.8;">{{ day_info.day_name }}</span>
+                                            <span style="font-size: 1rem; font-weight: bold;">{{ day_info.date.day }}</span>
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="POST" action="{{ url_for('add_note', habit_id=habit.id, date_str=day_info.date) }}?month={{ current_month }}&year={{ current_year }}">
+                                        <input type="text" name="note" class="note-input {% if day_info.note %}has-text{% endif %}" 
+                                               placeholder="Текст..." value="{{ day_info.note or '' }}">
+                                        
+                                        <div class="d-flex justify-content-around mt-1">
+                                            <span class="mood-emoji {% if day_info.mood == 'happy' %}active{% endif %}" 
+                                                  onclick="this.parentElement.previousElementSibling.value='happy'; this.parentElement.submit();">😊</span>
+                                            <span class="mood-emoji {% if day_info.mood == 'neutral' %}active{% endif %}" 
+                                                  onclick="this.parentElement.previousElementSibling.value='neutral'; this.parentElement.submit();">😐</span>
+                                            <span class="mood-emoji {% if day_info.mood == 'sad' %}active{% endif %}" 
+                                                  onclick="this.parentElement.previousElementSibling.value='sad'; this.parentElement.submit();">😔</span>
+                                        </div>
+                                        <input type="hidden" name="mood" value="{{ day_info.mood or '' }}">
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Модалка напоминания -->
+                <div class="modal fade" id="reminderModal{{ habit.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-color);">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title">Время напоминания</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form method="POST" action="{{ url_for('set_reminder', habit_id=habit.id) }}">
+                                <div class="modal-body">
+                                    <p>Укажите точное время, когда нужно напомнить о привычке "{{ habit.name }}".</p>
+                                    <input type="time" name="reminder_time" class="form-control" value="{{ habit.reminder_time or '' }}">
+                                </div>
+                                <div class="modal-footer border-secondary">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Модалка редактирования -->
+                <div class="modal fade" id="editModal{{ habit.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-color);">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title">Редактировать</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form method="POST" action="{{ url_for('edit_habit', habit_id=habit.id) }}">
+                                <div class="modal-body">
+                                    <input type="text" name="new_name" class="form-control form-control-lg" value="{{ habit.name }}" required>
+                                </div>
+                                <div class="modal-footer border-secondary">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5 glass-card">
+                    <div class="display-1 text-light-muted mb-3"><i class="bi bi-journal-x"></i></div>
+                    <h4>Пока нет привычек</h4>
+                    <p class="text-light-muted">Добавь свою первую привычку выше!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function setTheme(themeName) {
+            const body = document.body;
+            body.classList.remove('theme-ocean', 'theme-sunset', 'theme-default', 'light-theme');
+            if (themeName === 'ocean') body.classList.add('theme-ocean');
+            if (themeName === 'sunset') body.classList.add('theme-sunset');
+            if (themeName === 'default') body.classList.add('theme-default');
+            localStorage.setItem('colorTheme', themeName);
+        }
+
+        const savedColorTheme = localStorage.getItem('colorTheme');
+        if (savedColorTheme) { setTheme(savedColorTheme); } 
+        else { document.body.classList.add('theme-default'); }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                setTheme(localStorage.getItem('colorTheme') || 'default');
+                themeIcon.classList.replace('bi-sun', 'bi-moon-stars');
+            } else {
+                body.classList.remove('theme-ocean', 'theme-sunset', 'theme-default');
+                body.classList.add('light-theme');
+                themeIcon.classList.replace('bi-moon-stars', 'bi-sun');
+            }
+        }
+
+        if ("Notification" in window) {
+            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        }
+
+        const habitsWithReminders = [
+            {% for habit in habits %}
+                {% if habit.reminder_time %}
+                    { name: "{{ habit.name }}", time: "{{ habit.reminder_time }}" },
+                {% endif %}
+            {% endfor %}
+        ];
+
+        function showNotification(habitName) {
+            if (Notification.permission === "granted") {
+                new Notification("Трекер привычек", {
+                    body: `Пора выполнить: ${habitName}!`,
+                    icon: "https://cdn-icons-png.flaticon.com/512/1088/1088907.png"
+                });
+            } else {
+                alert(`Напоминание: Пора выполнить "${habitName}"!`);
+            }
+        }
+
+        setInterval(() => {
+            const now = new Date();
+            const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            habitsWithReminders.forEach(habit => {
+                if (habit.time === currentTime) { showNotification(habit.name); }
+            });
+        }, 60000);
+    </script>
+</body>
+</html>
