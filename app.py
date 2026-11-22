@@ -16,6 +16,9 @@ database_url = os.environ.get('DATABASE_URL')
 if database_url:
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
+    # Принудительно используем psycopg2 драйвер
+    if database_url.startswith("postgresql://"):
+        database_url = database_url.replace("postgresql://", "postgresql+psycopg2://", 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tracker.db'
@@ -193,7 +196,7 @@ def stats():
 @login_required
 def export_data():
     output = io.StringIO()
-    output.write('\ufeff') # Добавляем метку BOM для Excel
+    output.write('\ufeff')
     writer = csv.writer(output, delimiter=';')
     
     writer.writerow(['Привычка', 'Дата', 'Выполнено', 'Заметка', 'Настроение'])
